@@ -1,0 +1,8 @@
+{
+  "name": "async-flow-control",
+  "version": "0.0.1",
+  "author": "Nicholas Cloud <ncloud@appendto.com>",
+  "dependencies": {},
+  "devDependencies": {
+  }
+}
