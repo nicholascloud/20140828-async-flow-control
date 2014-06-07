@@ -2,7 +2,10 @@
   "name": "async-flow-control",
   "version": "0.0.1",
   "author": "Nicholas Cloud <ncloud@appendto.com>",
-  "dependencies": {},
-  "devDependencies": {
-  }
+  "dependencies": {
+    "async": "^0.9.0",
+    "eventemitter2": "^0.4.13",
+    "q": "^1.0.1"
+  },
+  "devDependencies": {}
 }
