@@ -199,6 +199,76 @@ __References__
 
 __Slides__
 
+### [+] Executing autonomous functions in a particular order
+
+#### [+] series
+
+- runs functions in order
+- functions pass an error and/or result to callback
+- if any function raises an error, whole process aborted
+- results accumulated in an array
+
+```javascript
+TODO: example
+```
+
+#### [+] parallel
+
+- like series, except run in "parallel" (event loop)
+
+```javascript
+TODO: example
+```
+
+### [+] Piping the output of functions as input to other functions
+
+#### [+] waterfall
+
+```javascript
+TODO: example
+```
+
+#### [+] compose
+
+```javascript
+TODO: example
+```
+
+### [+] Executing functions repeatedly on a particular condition
+
+#### [+] whilst
+
+```javascript
+TODO: example
+```
+
+#### [+] doWhilst
+
+```javascript
+TODO: example
+```
+
+### [+] Batch executing functions
+
+#### [+] queue
+
+```javascript
+TODO: example
+```
+
+#### [+] cargo
+
+```javascript
+TODO: example
+```
+
+### [+] Repeating a function to accumulate results
+
+#### [+] times
+
+```javascript
+TODO: example
+```
 
 
 ## Eventing
