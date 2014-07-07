@@ -230,6 +230,9 @@ TODO: example
 
 #### [+] compose
 
+- creates a function `f` that represents a pipeline of other functions, each of which receives an argument and passes a result to a callback
+- last function in the pipeline will pass its value to the callback of `f`
+
 ```javascript
 TODO: example
 ```
@@ -252,11 +255,17 @@ TODO: example
 
 #### [+] queue
 
+- queue passes a single task to each available worker up to the concurrency limit, letting a new task in each time a worker becomes available
+
+![](queue-animation.gif)
+
 ```javascript
 TODO: example
 ```
 
 #### [+] cargo
+
+- cargo passes a collection of tasks to a *single* worker up to the payload limit and repeats when the worker is finished
 
 ```javascript
 TODO: example

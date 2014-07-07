@@ -4,8 +4,10 @@
   "author": "Nicholas Cloud <ncloud@appendto.com>",
   "dependencies": {
     "async": "^0.9.0",
+    "colors": "^0.6.2",
     "eventemitter2": "^0.4.13",
-    "q": "^1.0.1"
+    "q": "^1.0.1",
+    "shelljs": "^0.3.0"
   },
   "devDependencies": {}
 }
