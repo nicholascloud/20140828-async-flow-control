@@ -23,282 +23,233 @@ __Slides__
 ### [+] Continuations as objects
 
 
+## Flows
 
-## Promises
 
-__References__
-- [Promises/A+](https://promises-aplus.github.io/promises-spec/)
-- [You're missing the point of promises](http://domenic.me/2012/10/14/youre-missing-the-point-of-promises/)
-- [kriskowal/q](https://github.com/kriskowal/q)
+### linear
 
-__Slides__
 
-### [+] No empty promises!
+### branching
 
-- objects
-- represent the _state_ of an asynchronous operation
-	- pending
-	- rejected
-	- fulfilled
-- hold the value of a successful asynchronous operation
-- hold the error of a failed asynchronous operation
 
-### [+] Creation
+### loops
 
-- (mostly) created by _deferreds_
-- deferreds:
-	- hold a reference to the promise they create
-	- expose the API for rejecting or fulfilling a promise (changing its state)
-	- never returned to calling code
-- promises:
-	- expose `then()` method for attaching callbacks to be called when rejected/fulfilled
-	- always returned to calling code
+#### async.whilst/doWhilst
 
-### [+] Encapsulate asynchronous operations so we can treat them as synchronous
+
+### series
+
+#### async.series
 
 ```javascript
-function performAsyncAction () {
-  var deferred = q.defer(),
-      promise = deferred.promise;
-    
-  var times = 0,
-      maxTimes = 3;
-  
-  var interval = setInterval(function () {
-  if (++times < maxTimes) {
-      return deferred.notify(times);
-    }
-    clearInterval(interval);
-    if (Date.now() % 2 === 0) {
-      deferred.resolve();
-    } else {
-      deferred.reject();
-    }
-  }, 1000);
-  
-  return promise;
-}
-```
+'use strict';
+var async = require('async');
 
-### [+] Aggregate callbacks so we can deal with success/error conditions in one place
-
-```javascript
-var promise = performAsyncAction();
-
-promise.then(function onSuccess () {
-  console.log('promise resolved!');  
-}, function onError() {
-  console.log('promise rejected!');  
-}, function onProgress (times) {
-  console.log('tried %s times', times);
-});
-```
-
-### [+] Attach *as many callbacks* as we want to the *same* promise
-
-```javascript
-function step3() {
-  var promise = performAsyncAction();
-  promise.progress(function (times) {
-    console.log('tried %s times', times);
-  });
-  return promise;
-}
-
-function step2() {
-  var promise = step3();
-  promise.then(function () {
-    console.log('step2 success');
-  });
-  return promise;
-}
-
-function step1() {
-  var promise = step2();
-  promise.then(null, function (err) {
-    console.error('step1 handling error:', err);
-  });
-  return promise;
-}
-
-step1().done(function () {
-  console.log('all steps complete');
-});
-```
-
-### [+] Chain promises that each have a chance to mutate the initial promise's value, or return a different value altogether
-
-- `then()` always returns a new promise
-	- resolved with the return value of the initial promise's resolve handler, or
-	- rejected with the return value of the initial promise's reject handler
-- "middleware"
-
-```javascript
-function performAsyncAction() {
-  var deferred = q.defer(),
-    promise = deferred.promise;
-
-  var user = {name: 'Jamie'};
-
+function changePassword(cb) {
   setTimeout(function () {
-    deferred.resolve(user);
-  }, 200);
-
-  return promise;
+    console.log('changing password...');
+    cb(null);
+  }, 500);
 }
 
-function step3() {
-  var promise = performAsyncAction();
-  return promise.then(function (user) {
-    if (user.name === 'Jamie') {
-      return {name: 'Kingslayer'};
-    }
-    return user;
+var fail = true;
+function notifyUser(cb) {
+  setTimeout(function () {
+    console.log('notifying user...');
+    cb(fail ? new Error('fail!') : null);
+  }, 1000);
+}
+
+function sendToNSA(cb) {
+  setTimeout(function () {
+    console.log('sending to NSA...');
+    cb(null);
+  }, 500);
+}
+
+async.series([changePassword, notifyUser, sendToNSA], function (err) {
+  if (err) {
+    return console.error(err);
+  }
+  console.log('all done');
+});
+```
+
+#### promise chain + Q.makeNodeResolver()
+
+```javascript
+'use strict';
+var Q = require('q');
+
+function changePassword(cb) {
+  setTimeout(function () {
+    console.log('changing password...');
+    cb(null);
+  }, 500);
+}
+
+var fail = true;
+function notifyUser(cb) {
+  setTimeout(function () {
+    console.log('notifying user...');
+    cb(fail ? new Error('fail!') : null);
+  }, 1000);
+}
+
+function sendToNSA(cb) {
+  setTimeout(function () {
+    console.log('sending to NSA...');
+    cb(null);
+  }, 500);
+}
+
+var steps = [changePassword, notifyUser, sendToNSA];
+var lastPromise = Q();
+steps.forEach(function (step) {
+  lastPromise = lastPromise.then(function () {
+    var deferred = Q.defer();
+    step(deferred.makeNodeResolver());
+    return deferred.promise;
   });
-}
+});
 
-function step2() {
-  var promise = step3();
-  return promise.then(function (user) {
-    if (user.name === 'Kingslayer') {
-      user.numHands = 1;
-    }
-    return user;
-  });
-}
-
-function step1() {
-  var promise = step2();
-  promise.then(function (user) {
-    console.log(JSON.stringify(user));
-  });
-  return promise;
-}
-
-step1().done(function () {
-  console.log('all steps complete');
+lastPromise.done(function () {
+  console.log('all done');
+}, function (err) {
+  console.error(err);
 });
 ```
 
 
+### parallel
 
-### [+] Resources
-
-- Promises/A+ specification
-- Popular libraries
-	- q
-	- when.js
-	- jQuery promises*
-
-
-
-## async.js
-
-__References__
-- [caolan/async](https://github.com/caolan/async)
-
-__Slides__
-
-### [+] Executing autonomous functions in a particular order
-
-#### [+] series
-
-- runs functions in order
-- functions pass an error and/or result to callback
-- if any function raises an error, whole process aborted
-- results accumulated in an array
+#### async.parallel
 
 ```javascript
-TODO: example
+var async = require('async');
+
+function getUser(id, cb) {
+  setTimeout(function () {
+    cb(null, {id: id, name: 'nick'});
+  }, 500);
+}
+
+function getUSStates(cb) {
+  setTimeout(function () {
+    cb(null, ['MO', 'IL']);
+  }, 2000);
+}
+
+async.parallel([
+  getUser.bind(null, 100),
+  getUSStates
+], function (err, results) {
+  console.log('user', results[0]);
+  console.log('states', results[1]);
+});
 ```
 
-#### [+] parallel
-
-- like series, except run in "parallel" (event loop)
+#### Q.[all|allSettled] + Q.[fcall|fapply|nfcall|nfapply]
 
 ```javascript
-TODO: example
-```
+var Q = require('q');
 
-### [+] Piping the output of functions as input to other functions
+function getUser(id, cb) {
+  setTimeout(function () {
+    cb(null, {id: id, name: 'nick'});
+  }, 500);
+}
 
-#### [+] waterfall
+function getUSStates(cb) {
+  setTimeout(function () {
+    cb(null, ['MO', 'IL']);
+  }, 2000);
+}
 
-```javascript
-TODO: example
-```
-
-#### [+] compose
-
-- creates a function `f` that represents a pipeline of other functions, each of which receives an argument and passes a result to a callback
-- last function in the pipeline will pass its value to the callback of `f`
-
-```javascript
-TODO: example
-```
-
-### [+] Executing functions repeatedly on a particular condition
-
-#### [+] whilst
-
-```javascript
-TODO: example
-```
-
-#### [+] doWhilst
-
-```javascript
-TODO: example
-```
-
-### [+] Batch executing functions
-
-#### [+] queue
-
-- queue passes a single task to each available worker up to the concurrency limit, letting a new task in each time a worker becomes available
-
-![](queue-animation.gif)
-
-```javascript
-TODO: example
-```
-
-#### [+] cargo
-
-- cargo passes a collection of tasks to a *single* worker up to the payload limit and repeats when the worker is finished
-
-```javascript
-TODO: example
-```
-
-### [+] Repeating a function to accumulate results
-
-#### [+] times
-
-```javascript
-TODO: example
+Q.all([
+  Q.nfcall(getUser, 123),
+  Q.nfcall(getUSStates)
+]).then(function (user, states) {
+  console.log(arguments);
+}, function (err) {
+  console.error('ERR', err);
+});
 ```
 
 
-## Eventing
+### pipeline
 
-__References__
-- [Events](http://nodejs.org/api/events.html)
-- [EventEmitter2](https://github.com/asyncly/EventEmitter2)
+#### async.waterfall
 
-__Slides__
+```javascript
+'use strict';
+var async = require('async');
 
-### [+] Resources
+function getUser(cb) {
+  console.log('getting user');
+  setTimeout(function () {
+    cb(null, {
+      id: 1,
+      name: 'nick',
+      dob: new Date(1981, 10, 15)
+    })
+  }, 500);
+}
 
-- EventEmitter2/3
-- Ventage
+function calcAge(user, cb) {
+  console.log('calcing age for:', user);
+  setTimeout(function () {
+    var now = Date.now(),
+      then = user.dob.getTime();
+    var age = (now - then) / (1000 * 60 * 60 * 24 * 365);
+    cb(null, Math.round(age));
+  }, 1000);
+}
+
+function reward(age, cb) {
+  console.log('getting reward for age:', age);
+  setTimeout(function () {
+    switch (age) {
+      case 25:
+        return cb(null, '$100');
+      case 30:
+        return cb(null, '$150');
+      case 35:
+        return cb(null, '$200');
+      default:
+        return cb(null, '$0');
+    }
+  }, 700);
+}
+
+async.waterfall([
+  getUser,
+  calcAge,
+  reward
+], function (err, reward) {
+  if (err) {
+    return console.error(err);
+  }
+  console.log('reward:', reward);
+});
+```
+
+#### async.compose
+
+#### Q.deferred.then
 
 
-## Message bus (?)
+### batching
 
-__References__
+#### async.queue
 
-__Slides__
+#### async.cargo
+
+#### Q.[all|allSettled](.spread) + ?
 
 
----
+### eventing
+
+#### Q.notify
+
+#### EventEmitter
