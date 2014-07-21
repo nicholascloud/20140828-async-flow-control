@@ -55,15 +55,15 @@ var plan = {
   billAmt: 100
 };
 
-var composed = async.compose(
-  govtExtortion,
-  prorate,
+var seq = async.seq(
+  createBill,
   carrierFee,
-  createBill
+  prorate,
+  govtExtortion
 );
 
 //bill = govtExtortion(prorate(carrierFee(createBill(plan))))
-composed(plan, function (err, bill) {
+seq(plan, function (err, bill) {
   if (err) {
     return console.error(err);
   }
