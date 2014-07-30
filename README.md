@@ -25,7 +25,7 @@ Nicholas Cloud
     - contention when adapting other APIs (do we follow the node pattern or the native API pattern?)
 - necessary, but we can be more efficient
 
-## Copying strategies
+## Coping strategies
 
 - async.js
 - Q promises
@@ -115,23 +115,23 @@ see: example/q-parallel.js
 see: example/q-pipeline.js
 
 
-### batching
-
-
-
 #### Q.[all|allSettled](.spread) + ?
 
 <!-- Events --------------------------------------------------------------- -->
 
 ## Events
 
-- 
-
-### Service bus
-
-### Q.notify
-
 ### EventEmitter
+
+- EventEmitter/EventEmitter2
+- event objects encapsulate operations
+- may be raised asynchronously
+- downside: subscriptions must happen before events are fired
+
+see: example/event-series.js
+
+see: example/event-pipeline.js
+
 
 <!-- ES6 generators ------------------------------------------------------- -->
 
