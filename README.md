@@ -30,7 +30,7 @@ Nicholas Cloud
 - async.js
 - Q promises
 - Events
-- ES6 generators (?)
+- ES6 generators
 
 <!-- async.js ------------------------------------------------------------- -->
 
@@ -39,8 +39,6 @@ Nicholas Cloud
 - library with utility functions for dealing with collections and flow control
 - callback-driven
 - my personal go-to
-
-### async.whilst/doWhilst
 
 ### async.series (sequential flow)
 
@@ -73,7 +71,7 @@ see: example/async-seq.js
 
 ### async.queue (batch flow)
 
-- a __variable number of workers__ execute the same function on a collection of items
+- a _variable number of workers_ execute the same function on a collection of items
 - only MAX number of workers may be executing at once
 
 ![async queue](queue-animation.gif)
@@ -82,7 +80,7 @@ see: example/async-queue.js
 
 ### async.cargo (batch flow)
 
-- a single worker executes the same function on __a variable subset__ of items in a collection
+- a single worker executes the same function on _a variable subset_ of items in a collection
 - only a MAX number of items may be worked with at once
 
 see: example/async-cargo.js
@@ -137,7 +135,28 @@ see: example/event-pipeline.js
 
 ## ES6 Generators
 
-### co + thunkify
+- generators are "resumable functions"
+- when a generator yields a value, it is made available to code calling the generator function
+- when a generator is resumed, it picks up where it last yielded, and *any value passed into the next iteration is used in place of the last yield statement*
 
+### thunkify + co
 
+#### thunkify
+
+- takes a callback-based async function and turns it into a function that *returns another function that accepts the final callback*
+
+```javascript
+function add(a, b, cb) { /*... */ }
+var thadd = thunkify(add); //function thadd(a, b) { /*...*/ }
+var result = f2(1, 2); //function (cb) { /*...*/ }
+result(function (err, value) { /*...*/ }) //value === 3
+```
+
+#### co
+
+- together with thunkify lets us write asynchronous code that looks synchronous
+- invokes a generator until it is done, feeding the result from all yielded thunks back to the generator as values
+- similar to `async` and `await` in C#
+
+see: example/generator-waterfall.js
 
