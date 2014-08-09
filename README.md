@@ -137,3 +137,7 @@ see: example/event-pipeline.js
 
 ## ES6 Generators
 
+### co + thunkify
+
+
+
