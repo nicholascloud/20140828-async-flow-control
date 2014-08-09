@@ -18,7 +18,7 @@ function FakeTransaction() {
     setTimeout(function () {
       console.log(self.toString().cyan);
       cb();
-    }, 900);
+    }, 1000);
   };
 }
 

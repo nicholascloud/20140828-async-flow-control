@@ -14,25 +14,31 @@ function OpEvent(fn) {
 
 util.inherits(OpEvent, EventEmitter2);
 
-OpEvent.prototype.invoke = function () {
+OpEvent.prototype.start = function () {
   this.fn(this._makeCb());
 };
 
 OpEvent.prototype._makeCb = function () {
   var self = this;
-  return function (err) {
+  return function (err /*arg1, arg2, arg3...*/ ) {
     if (err) {
       return self.emit('err', err);
     }
     var args = ['end'].concat(slice(arguments, 1));
+    // ['end', arg1, arg2, arg3...]
     self.emit.apply(self, args);
   };
 };
 
 OpEvent.series = function (funcs) {
-  if (!Array.isArray(funcs)) {
-    funcs = slice(arguments);
-  }
+  /*
+   * OuterOpEvent (
+   *   InnerOpEvent1(func1).start()
+   *   InnerOpEvent2(func2).start()
+   *   InnerOpEvent3(func3).start()
+   *   OuterOpEvent.emit('end')
+   * ).start()
+   */
   return new OpEvent(function (cb) {
     function loop() {
       if (!funcs.length) {
@@ -47,7 +53,7 @@ OpEvent.series = function (funcs) {
         console.info('\tfunc^end');
         loop();
       });
-      op.invoke();
+      op.start();
     }
     loop();
   });
@@ -82,6 +88,6 @@ series.once('end', function () {
 series.once('err', function (err) {
   console.error('funcs errd', err);
 });
-series.invoke();
+series.start();
 
 

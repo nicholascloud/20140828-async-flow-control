@@ -2,6 +2,7 @@
 
 Nicholas Cloud
 
+
 <!-- Introduction --------------------------------------------------------- -->
 
 ## Two models of flow control
@@ -31,6 +32,7 @@ Nicholas Cloud
 - Q promises
 - Events
 - ES6 generators
+
 
 <!-- async.js ------------------------------------------------------------- -->
 
@@ -65,7 +67,8 @@ see: example/async-waterfall.js
 
 ### async.seq (pipeline flow)
 
-- Use `async.seq` to create a function wrapper for your pipline that can be passed to other code 
+- use `async.seq` to create a function wrapper for your pipline
+- differes from `async.waterfall` in that it returns a function that must be invoked to start the sequence
 
 see: example/async-seq.js
 
@@ -74,7 +77,7 @@ see: example/async-seq.js
 - a _variable number of workers_ execute the same function on a collection of items
 - only MAX number of workers may be executing at once
 
-![async queue](queue-animation.gif)
+![async queue](https://i.imgur.com/FTMkZ1D.gif)
 
 see: example/async-queue.js
 
@@ -84,6 +87,7 @@ see: example/async-queue.js
 - only a MAX number of items may be worked with at once
 
 see: example/async-cargo.js
+
 
 <!-- Q promises ----------------------------------------------------------- -->
 
@@ -100,7 +104,7 @@ see: example/async-cargo.js
 
 see: example/q-series.js
 
-#### Q.[all|allSettled] + Q.[fcall|fapply|nfcall|nfapply] (parallel flow)
+#### Q.all + Q.nfcall (parallel flow)
 
 - immediately executes all functions asynchronously
 - all function results passed to resolved callback
@@ -112,8 +116,6 @@ see: example/q-parallel.js
 
 see: example/q-pipeline.js
 
-
-#### Q.[all|allSettled](.spread) + ?
 
 <!-- Events --------------------------------------------------------------- -->
 
@@ -143,12 +145,12 @@ see: example/event-pipeline.js
 
 #### thunkify
 
-- takes a callback-based async function and turns it into a function that *returns another function that accepts the final callback*
+- takes a callback-based async function and turns it into a function that *returns another function that accepts the final callback* (the "thunk")
 
 ```javascript
 function add(a, b, cb) { /*... */ }
 var thadd = thunkify(add); //function thadd(a, b) { /*...*/ }
-var result = f2(1, 2); //function (cb) { /*...*/ }
+var result = thadd(1, 2); //function (cb) { /*...*/ }
 result(function (err, value) { /*...*/ }) //value === 3
 ```
 
