@@ -137,3 +137,7 @@ see: example/q-pipeline.js
 
 ## ES6 Generators
 
+### co + thunkify
+
+
+
