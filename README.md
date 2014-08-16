@@ -40,6 +40,7 @@ Nicholas Cloud
 
 - library with utility functions for dealing with collections and flow control
 - callback-driven
+- will not automagically make all your functions async!
 - my personal go-to
 
 ### async.series (sequential flow)
