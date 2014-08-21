@@ -1,3 +1,4 @@
+#!/Users/nicholascloud/nvm/v0.10.29/bin/node
 'use strict';
 var async = require('async');
 var moment = require('moment');

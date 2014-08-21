@@ -1,3 +1,4 @@
+#!/Users/nicholascloud/nvm/v0.10.29/bin/node
 'use strict';
 var async = require('async');
 
@@ -28,7 +29,7 @@ function reward(age, cb) {
     switch (age) {
       case 25:
         return cb(null, '$100');
-      case 30:
+      case 33:
         return cb(null, '$150');
       case 35:
         return cb(null, '$200');

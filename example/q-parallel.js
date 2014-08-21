@@ -1,3 +1,4 @@
+#!/Users/nicholascloud/nvm/v0.10.29/bin/node
 'use strict';
 var Q = require('q');
 
@@ -16,8 +17,9 @@ function getUSStates(cb) {
 Q.all([
   Q.nfcall(getUser, 123),
   Q.nfcall(getUSStates)
-]).then(function (user, states) {
-  console.log(arguments);
+]).then(function (results) {
+  console.log('user:', results[0]);
+  console.log('states:', results[1]);
 }, function (err) {
   console.error('ERR', err);
 });

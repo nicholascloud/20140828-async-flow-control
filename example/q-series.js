@@ -1,3 +1,4 @@
+#!/Users/nicholascloud/nvm/v0.10.29/bin/node
 'use strict';
 var Q = require('q');
 
@@ -8,7 +9,7 @@ function changePassword(cb) {
   }, 500);
 }
 
-var fail = true;
+var fail = false;
 function notifyUser(cb) {
   setTimeout(function () {
     console.log('notifying user...');

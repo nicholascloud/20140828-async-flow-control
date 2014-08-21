@@ -1,3 +1,4 @@
+#!/Users/nicholascloud/nvm/v0.10.29/bin/node
 'use strict';
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var util = require('util');
@@ -14,7 +15,7 @@ function OpEvent(fn) {
 
 util.inherits(OpEvent, EventEmitter2);
 
-OpEvent.prototype.invoke = function (args) {
+OpEvent.prototype.start = function (args) {
   if (!Array.isArray(args)) {
     args = slice(arguments);
   }
@@ -33,18 +34,17 @@ OpEvent.prototype._makeCb = function () {
   };
 };
 
-OpEvent.pipeline = function (funcs) {
-  if (!Array.isArray(funcs)) {
-    funcs = slice(arguments);
-  }
+OpEvent.pipeline = function (tasks) {
   return new OpEvent(function (cb) {
     function loop(/*loopArgs*/) {
       var loopArgs = slice(arguments);
-      if (!funcs.length) {
+
+      if (!tasks.length) {
         console.info('\tno more funcs');
         return cb.apply(null, [null].concat(loopArgs));
       }
-      var op = new OpEvent(funcs.shift());
+
+      var op = new OpEvent(tasks.shift());
       op.once('err', function (err) {
         console.info('\tfunc^err');
         cb(err);
@@ -53,13 +53,13 @@ OpEvent.pipeline = function (funcs) {
         var endArgs = slice(arguments);
         loop.apply(null, endArgs);
       });
-      op.invoke(loopArgs);
+      op.start(loopArgs);
     }
     loop();
   });
 };
 
-var funcs = [
+var tasks = [
   function x (cb) {
     console.info('func x( )');
     setTimeout(function () {
@@ -81,13 +81,13 @@ var funcs = [
   }
 ];
 
-var pipeline = OpEvent.pipeline(funcs);
+var pipeline = OpEvent.pipeline(tasks);
 pipeline.once('end', function () {
   console.info('pipeline completed:', arguments);
 });
 pipeline.once('err', function (err) {
   console.error('pipeline errored:', err);
 });
-pipeline.invoke();
+pipeline.start();
 
 

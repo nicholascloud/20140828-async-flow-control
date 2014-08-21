@@ -1,3 +1,4 @@
+#!/Users/nicholascloud/nvm/v0.10.29/bin/node
 'use strict';
 var EventEmitter2 = require('eventemitter2').EventEmitter2;
 var util = require('util');
@@ -5,7 +6,7 @@ var util = require('util');
 var slice = function (target) {
   var args = Array.prototype.slice.call(arguments, 1);
   return Array.prototype.slice.apply(target, args);
-}
+};
 
 function OpEvent(fn) {
   EventEmitter2.call(this);
@@ -30,7 +31,7 @@ OpEvent.prototype._makeCb = function () {
   };
 };
 
-OpEvent.series = function (funcs) {
+OpEvent.series = function (tasks) {
   /*
    * OuterOpEvent (
    *   InnerOpEvent1(func1).start()
@@ -41,11 +42,12 @@ OpEvent.series = function (funcs) {
    */
   return new OpEvent(function (cb) {
     function loop() {
-      if (!funcs.length) {
+      if (!tasks.length) {
         console.info('\tno more funcs');
         return cb(null);
       }
-      var op = new OpEvent(funcs.shift());
+
+      var op = new OpEvent(tasks.shift());
       op.once('err', function (err) {
         console.info('\tfunc^err');
         cb(err);
@@ -59,7 +61,7 @@ OpEvent.series = function (funcs) {
   });
 };
 
-var ops = [
+var tasks = [
   function x (cb) {
     console.info('func x');
     setTimeout(function () {
@@ -81,7 +83,7 @@ var ops = [
   }
 ];
 
-var series = OpEvent.series(ops);
+var series = OpEvent.series(tasks);
 series.once('end', function () {
   console.info('all funcs completed');
 });
