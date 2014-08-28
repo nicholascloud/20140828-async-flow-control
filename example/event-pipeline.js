@@ -25,12 +25,14 @@ OpEvent.prototype.start = function (args) {
 
 OpEvent.prototype._makeCb = function () {
   var self = this;
-  return function (err) {
+  return function (err /*arg1, arg2, arg3...*/ ) {
     if (err) {
       return self.emit('err', err);
     }
-    var args = ['end'].concat(slice(arguments, 1));
-    self.emit.apply(self, args);
+    var cbArgs = slice(arguments, 1);
+    // ['end', arg1, arg2, arg3...]
+    var eventArgs = ['end'].concat(cbArgs);
+    self.emit.apply(self, eventArgs);
   };
 };
 

@@ -9,7 +9,7 @@ function changePassword(cb) {
   }, 500);
 }
 
-var fail = false;
+var fail = true;
 function notifyUser(cb) {
   setTimeout(function () {
     console.log('notifying user...');

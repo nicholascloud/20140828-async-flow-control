@@ -33,6 +33,13 @@ Nicholas Cloud
 - Events
 - ES6 generators
 
+## Flows
+
+- sequential (one-at-a-time, no dependency)
+- parallel (many-at-a-time, no dependency)
+- pipeline (one-at-a-time, dependency)
+- batch (many-at-a-time, no dependency)
+
 
 <!-- async.js ------------------------------------------------------------- -->
 
@@ -98,12 +105,16 @@ see: example/async-cargo.js
 - additional methods specifically for interfacing with node.js code (callbacks)
 - can handle thrown exceptions
 
-#### promise chain + Q.makeNodeResolver() (series flow)
+#### promise chain + Q.makeNodeResolver() (sequential flow)
 
 - executes functions in order
 - if any fail, series is aborted and err passed to last promise done() error callback
 
 see: example/q-series.js
+
+#### promise chain + Q.makeNodeResolver() (pipeline flow)
+
+see: example/q-pipeline.js
 
 #### Q.all + Q.nfcall (parallel flow)
 
@@ -113,16 +124,12 @@ see: example/q-series.js
 
 see: example/q-parallel.js
 
-#### promise chain + Q.makeNodeResolver() (pipeline flow)
-
-see: example/q-pipeline.js
-
 
 <!-- Events --------------------------------------------------------------- -->
 
 ## Events
 
-### EventEmitter
+### EventEmitter (sequential/pipeline)
 
 - EventEmitter/EventEmitter2
 - event objects encapsulate operations
@@ -155,7 +162,7 @@ var result = thadd(1, 2); //function (cb) { /*...*/ }
 result(function (err, value) { /*...*/ }) //value === 3
 ```
 
-#### co
+#### co (pipeline flow)
 
 - together with thunkify lets us write asynchronous code that looks synchronous
 - invokes a generator until it is done, feeding the result from all yielded thunks back to the generator as values

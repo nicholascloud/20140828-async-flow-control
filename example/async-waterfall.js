@@ -9,7 +9,7 @@ function getUser(cb) {
       id: 1,
       name: 'nick',
       dob: new Date(1981, 10, 15)
-    })
+    });
   }, 500);
 }
 

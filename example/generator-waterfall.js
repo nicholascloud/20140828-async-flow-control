@@ -18,7 +18,9 @@ var f3 = thunkify(function f3(num, cb) { // f3(num) => f(cb)
 // You may only yield a function, promise, generator, array, or object
 co(function *() {
   var num1 = yield f1(); //cb() => 1
+  console.log(num1);
   var num2 = yield f2(num1); //cb() => 3
+  console.log(num2);
   var num3 = yield f3(num2); //cb() => 6
   console.log(num3);
 })();

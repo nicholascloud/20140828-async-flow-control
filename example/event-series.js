@@ -21,22 +21,20 @@ OpEvent.prototype.start = function () {
 
 OpEvent.prototype._makeCb = function () {
   var self = this;
-  return function (err /*arg1, arg2, arg3...*/ ) {
+  return function (err) {
     if (err) {
       return self.emit('err', err);
     }
-    var args = ['end'].concat(slice(arguments, 1));
-    // ['end', arg1, arg2, arg3...]
-    self.emit.apply(self, args);
+    self.emit.call(self, 'end');
   };
 };
 
 OpEvent.series = function (tasks) {
   /*
    * OuterOpEvent (
-   *   InnerOpEvent1(func1).start()
-   *   InnerOpEvent2(func2).start()
-   *   InnerOpEvent3(func3).start()
+   *   InnerOpEvent1(task1).start()
+   *   InnerOpEvent2(task2).start()
+   *   InnerOpEvent3(task3).start()
    *   OuterOpEvent.emit('end')
    * ).start()
    */

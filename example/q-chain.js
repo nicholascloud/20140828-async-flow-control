@@ -3,24 +3,28 @@
 var Q = require('q');
 
 var d = Q.defer(),
-  p = d.promise;
+  p1 = d.promise;
+
+var p2 = p1.then(function onResolved (n) {
+  console.info('p1 resolved', arguments);
+  return n + 1;
+}, function onRejected (e) {
+  console.error('p1 rejected', arguments);
+//  return e;
+  throw e;
+});
+
+var p3 = p2.then(function onResolved () {
+  console.info('p2 resolved', arguments);
+}, function onRejected (err) {
+  console.error('p2 rejected', arguments);
+});
+
+p3.done(function () {
+  console.log('p3 done');
+});
 
 setImmediate(function () {
-  d.resolve(1);
-//  d.reject(new Error('2'));
-});
-
-var p2 = p.then(function (n) {
-  console.info('p1+', arguments);
-//  return n + 1;
-}, function (e) {
-  console.error('p1x', arguments);
-//  return e;
-//  throw e;
-});
-
-p2.then(function () {
-  console.info('p2+', arguments);
-}, function (err) {
-  console.error('p2x', arguments);
+//  d.resolve(1);
+  d.reject(new Error('no moar coffee'));
 });
